@@ -1,11 +1,13 @@
 # Next.js SSE Proof of Concept
 
-A simple Proof of Concept demonstrating Server-Sent Events (SSE) in a Next.js application.
+A Proof of Concept demonstrating Server-Sent Events (SSE) in a Next.js application, featuring a **Dual Stream Architecture**.
 
 ## Features
 
-- **Server-Side**: API route (`/api/sse`) streaming events using `text/event-stream`.
-- **Client-Side**: React component consuming events via `EventSource`.
+- **Dual Stream Architecture**:
+  1.  **Data Stream** (`/api/sse`): Simulates a standard data feed (clock/counters).
+  2.  **Notification Stream** (`/api/notifications`): Handles system presence (active users, join/leave events).
+- **Client-Side**: React component consuming both streams simultaneously.
 - **Configuration**: Adjusted `next.config.ts` to disable compression (crucial for local SSE development).
 
 ## Getting Started
@@ -25,4 +27,17 @@ A simple Proof of Concept demonstrating Server-Sent Events (SSE) in a Next.js ap
 
 ## How it works
 
-The server sends a "Hello" message upon connection and then streams a JSON object with a timestamp every 5 seconds. The client listens for these messages and updates the list in real-time.
+### Data Stream
+- **Endpoint**: `/api/sse`
+- **Behavior**: Sends a "Hello" handshake and then streams a simple JSON object with a message and timestamp.
+- **Client Handling**: Updates the "Server Events" list.
+
+### Notification Stream
+- **Endpoint**: `/api/notifications`
+- **Behavior**: Tracks connected clients in-memory. Broadcasts `user-connected` and `user-disconnected` events to all clients.
+- **Client Handling**: Updates the "Active Clients" count and adds "User joined/left" logs to the Notifications list.
+
+## Troubleshooting
+If you don't see events:
+- Ensure `compress: false` is set in `next.config.ts` (Next.js/Turbopack gzip buffering breaks SSE).
+- Check standard output for server logs ("SSE client connected").
